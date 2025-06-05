@@ -1,0 +1,124 @@
+    body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background-image: url('mylittlehorse.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    color: #5a2274;
+    padding: 20px;
+    height: 100vh;
+  
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.568);
+    border: 4px solid #f57dd4;
+    border-radius: 25px;
+    width: 320px;
+    padding: 20px;
+    margin: 0 auto;
+    box-shadow: 0 0 20px #f57dd4;
+    text-align: center;
+}
+
+.nome-section{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 4px solid #f57dd4;
+    border-radius: 25px;
+    width: 320px;
+    padding: 20px;
+    margin: 0 auto;
+    box-shadow: 0 0 20px #f57dd4;
+    text-align: center;
+}
+
+input[type="number"],
+input[type="text"] {
+    width: 90%;
+    padding: 8px;
+    margin: 6px 0;
+    border: 2px solid #fdb9fc;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: #fff0fa;
+    color: #5a2274;
+    box-shadow: inset 0 0 5px #ffccff;
+}
+
+button {
+    background-color: #f57dd4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    font-weight: bold;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(255, 105, 180, 0.6);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background-color: #ff94e3;
+}
+
+
+
+.cavalo {
+     position: absolute;
+    left: var(--pos); 
+    top: calc(80px * var(--linha)); 
+    width: 50px;
+    height: 50px;
+    font-size: 35px;
+    text-align: center;
+    margin-left: 50%;
+    
+}
+
+.nome {
+   
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #7c2aa8;
+    background: #fff4ff;
+    padding: 2px 4px;
+    border-radius: 6px;
+    box-shadow: 0 0 5px #e7b6ff;
+    
+
+}
+
+img {
+    width: 350px;
+    margin-left: 37%;
+}
+
+.painel_corrida {
+    margin: 20px auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 5px dashed #f57dd4;
+    border-radius: 25px;
+    box-shadow: 0 0 15px #f57dd4;
+    width: 95%;
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+}
+
+.finalizacao {
+    background-color: #ffccff;
+    border-radius: 20px;
+    
+}
+
+.msgpodio  {
+    margin-left: 500px;
+}

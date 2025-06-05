@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Turfe Amigo</title>
+</head>
+
+<body>
+  <h1><img src="My-Little-Horse-04-06-2025.png" alt="Logo Corrida" /></h1>
+
+  <div class="form-section" id="config">
+    <h2>Configurar Turfe Amigo</h2>
+    Quantidade de cavalo <input type="Number" min="2" max="6" id="ipt_qtde_cavalos"
+      placeholder="No minimo 2 e no maximo 6">
+    Quantidade de votas <input type="Number" min="5" max="10" id="ipt_qtde_voltas"
+      placeholder="Minimo 5 voltas e Maximo 10 voltas">
+    <button onclick="definirCorrida()">Avançar</button>
+  </div>
+
+  <div id="nomes_cavalos" class="nome-section" style="display:none;">
+    <h3>Informe o nome dos cavalos</h3>
+    <div id="inputs_nomes"></div>
+    <button onclick="iniciarCorrida()">Iniciar Corrida</button>
+  </div>
+
+  <div id="painel_corrida" class="painel_corrida" style="display:none;">
+    <h2>Corrida em andamento...</h2>
+    <div id="div_corrida" class="pista"></div>
+    <div class="cavalo"></div>
+    <div id="div_mensagem" style="margin-top: 20px;"></div>
+    <br />
+    <button onclick="correr()">Próxima Volta</button>
+  </div>
+
+  <div id="finalizacao" class="finalizacao" style="display:none;">
+    <h2 class="msgpodio">Resultado Final do Turfe Amigo</h2>
+    <div id="podio" class="msgpodio"></div>
+    <h2 id="resultado" class="resultado"></h2>
+  </div>
+</body>
+
+
+<script>
+  ipt_qtde_cavalos.value = "";
+  ipt_qtde_voltas.value = "";
+  var qtde = 0;
+  var voltas = 0;
+  var nomes = [];
+  var posicoes = [];
+  var historico = [];
+  var voltaAtual = 0;
+
+  function definirCorrida() {
+    qtde = Number(ipt_qtde_cavalos.value);
+    voltas = Number(ipt_qtde_voltas.value);
+
+    if (qtde < 2 || qtde > 6) {
+      alert("Quantidade de cavalos deve ser entre 2 e 6");
+      return;
+    }
+    if (voltas < 5 || voltas > 10) {
+      alert("Quantidade de voltas deve ser entre 5 e 10");
+      return;
+    }
+
+    inputs_nomes.innerHTML = "";
+    for (var i = 0; i < qtde; i++) {
+      inputs_nomes.innerHTML += `<input type="text" id="nome${i}" placeholder="Nome do cavalo ${i + 1}"><br>`;
+    }
+
+    config.style.display = "none";
+    nomes_cavalos.style.display = "block";
+  }
+
+  function iniciarCorrida() {
+    nomes = [];
+    posicoes = [];
+    historico = [];
+    voltaAtual = 0;
+
+    for (var i = 0; i < qtde; i++) {
+      var nome = document.getElementById("nome" + i).value;
+      if (nome == "") {
+        alert("Digite todos os nomes");
+        return;
+      }
+      nomes.push(nome);
+      posicoes.push(0);
+      historico.push([]);
+    }
+
+    nomes_cavalos.style.display = "none";
+    painel_corrida.style.display = "block";
+    mostrarCorrida();
+  }
+
+  function correr() {
+    if (voltaAtual >= voltas) {
+      finalizar();
+      return;
+    }
+
+    for (var i = 0; i < qtde; i++) {
+      var avanco = Math.floor(Math.random() * 21);
+      posicoes[i] += avanco;
+      historico[i].push(posicoes[i]);
+    }
+
+    voltaAtual++;
+    mostrarCorrida();
+
+    if (voltaAtual >= voltas) {
+      correr.innerText = "Finalizar ";
+    }
+  }
+
+ function mostrarCorrida() {
+  div_corrida.innerHTML = "";
+  var maior = 0;
+  var segundo = 0;
+  var nomeMaior = "";
+  var nomeSegundo = "";
+
+  for (var i = 0; i < qtde; i++) {
+    var cavalo = document.createElement("div");
+    cavalo.className = "cavalo";
+
+    cavalo.style.setProperty("--pos", posicoes[i] + "px"); // posição horizontal (metros)
+    cavalo.style.setProperty("--linha", i);                // posição vertical (linha)
+
+    cavalo.innerHTML = `<div class="nome">${nomes[i]}</div>🐎`;
+
+    div_corrida.appendChild(cavalo);
+
+    if (posicoes[i] > maior) {
+      segundo = maior;
+      nomeSegundo = nomeMaior;
+      maior = posicoes[i];
+      nomeMaior = nomes[i];
+    } else if (posicoes[i] > segundo) {
+      segundo = posicoes[i];
+      nomeSegundo = nomes[i];
+    }
+  }
+
+  var diferenca = maior - segundo;
+  div_mensagem.innerHTML = `<strong>${nomeMaior}</strong> está ganhando com <strong>${diferenca} metros</strong> de vantagem para <strong>${nomeSegundo}</strong>!`;
+}
+
+
+
+  function finalizar() {
+    painel_corrida.style.display = "none";
+    finalizacao.style.display = "block";
+
+    var podium = [];
+    for (var i = 0; i < qtde; i++) {
+      podium.push({ nome: nomes[i], distancia: posicoes[i], voltas: historico[i] });
+    }
+
+    podium.sort((a, b) => b.distancia - a.distancia);
+
+    podio.innerHTML = "";
+
+    for (var i = 0; i < podium.length; i++) {
+      var div = document.createElement("div");
+      if (i == 0) {
+        div.className = "campeao";
+      }
+
+      div.innerHTML = `<h3>${i + 1}º lugar: ${podium[i].nome}</h3>
+                         <p>Distância total: ${podium[i].distancia} metros</p>
+                         <p>Desempenho por volta: ${podium[i].voltas.join(" ➝ ")}</p>
+                         <img src="cavalo${i + 1}.png" alt="Cavalo ${i + 1}">`;
+
+      podio.appendChild(div);
+    }
+  }
+</script>
+</body>
+
+</html>
