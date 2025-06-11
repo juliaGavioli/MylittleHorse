@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="stylee.css">
+    <title>Corrida de Cavalos</title>
+</head>
+
+<body>
+    <h1><img src="My-Little-Horse-04-06-2025.png" alt="Logo Corrida" /></h1>
+
+    <div id="tela_inicial">
+        Quantidade de cavalos: <input type="number" min="2" max="7" id="ipt_qntCavalo"><br><br>
+        Quantidade de voltas: <input type="number" min="5" max="10" id="ipt_qntVoltas"><br><br>
+        <button onclick="avancar()">Avançar</button>
+    </div>
+
+    <div id="tela_cadastro" style="display:none;">
+        Nome do cavalo: <input type="text" id="ipt_nomeCavalo">
+        <button onclick="cadastrar()">Cadastrar</button><br><br>
+        <div id="txt"></div>
+        <br>
+        <button id="btnIniciar" onclick="corrida()" disabled>Iniciar Corrida</button>
+    </div>
+
+    <button id="btnProxima" onclick="proximaVolta()" style="display:none;">Próxima Volta</button>
+
+    <div id="resumo" style="display:none;"></div>
+
+    <script>
+        var listaCavalos = [];
+        var tempos = [];
+        var voltaAtual = 0;
+        var totalVoltas = 0;
+        var corridaAtiva = false;
+
+        function avancar() {
+            var qnt = Number(document.getElementById('ipt_qntCavalo').value);
+            var voltas = Number(document.getElementById('ipt_qntVoltas').value);
+
+            if (qnt < 2 || qnt > 7) {
+                alert("Quantidade de cavalos deve ser entre 2 e 7.");
+                return;
+            }
+            if (voltas < 5 || voltas > 10) {
+                alert("Quantidade de voltas deve ser entre 5 e 10.");
+                return;
+            }
+
+            document.getElementById('tela_inicial').style.display = 'none';
+            document.getElementById('tela_cadastro').style.display = 'block';
+
+            listaCavalos = [];
+            document.getElementById('txt').innerHTML = "";
+            document.getElementById('resumo').innerHTML = "";
+            document.getElementById('btnIniciar').disabled = true;
+            document.getElementById('btnProxima').style.display = 'none';
+            document.getElementById('resumo').style.display = 'none';
+            voltaAtual = 0;
+            corridaAtiva = false;
+        }
+
+        function cadastrar() {
+            var nome = document.getElementById('ipt_nomeCavalo').value.trim();
+            var total = Number(document.getElementById('ipt_qntCavalo').value);
+
+            if (nome === "") {
+                alert("Informe o nome do cavalo.");
+                return;
+            }
+
+            if (listaCavalos.length < total) {
+                listaCavalos.push(nome);
+                document.getElementById('ipt_nomeCavalo').value = "";
+
+                var txt = document.getElementById('txt');
+                txt.innerHTML = "Cavalos cadastrados:<br>";
+                for (var i = 0; i < listaCavalos.length; i++) {
+                    txt.innerHTML += "- " + listaCavalos[i] + "<br>";
+                }
+
+                if (listaCavalos.length === total) {
+                    alert("Todos os cavalos cadastrados! Agora você pode iniciar a corrida.");
+                    document.getElementById('btnIniciar').disabled = false;
+                }
+            } else {
+                alert("Quantidade máxima de cavalos já cadastrada.");
+            }
+        }
+
+        function corrida() {
+            if (corridaAtiva) {
+                alert("Corrida já em andamento!");
+                return;
+            }
+
+            var total = Number(document.getElementById('ipt_qntCavalo').value);
+            totalVoltas = Number(document.getElementById('ipt_qntVoltas').value);
+
+            if (listaCavalos.length !== total) {
+                alert("Cadastre todos os cavalos antes.");
+                return;
+            }
+
+            if (totalVoltas < 5 || totalVoltas > 10) {
+                alert("Quantidade de voltas deve ser entre 5 e 10.");
+                return;
+            }
+
+            tempos = [];
+            for (var i = 0; i < listaCavalos.length; i++) {
+                tempos[i] = 0;
+            }
+
+            voltaAtual = 0;
+            corridaAtiva = true;
+
+            document.getElementById("resumo").innerHTML = `<h3>🏇 Corrida iniciada! Clique em "Próxima Volta" para avançar.</h3>`;
+            document.getElementById("resumo").style.display = "block";
+            document.getElementById("btnProxima").style.display = "inline-block";
+            document.getElementById("btnIniciar").disabled = true;
+            document.getElementById('tela_cadastro').style.display = 'none';
+            document.getElementById('resumo').style.display = 'block';
+
+        }
+
+        function proximaVolta() {
+            if (!corridaAtiva) return;
+
+            voltaAtual++;
+
+            for (var i = 0; i < listaCavalos.length; i++) {
+                var tempo = Number((Math.random() * 2 + 7).toFixed(1));
+                tempos[i] += tempo;
+            }
+
+            var menor = tempos[0];
+            var posMenor = 0;
+
+            for (var i = 1; i < tempos.length; i++) {
+                if (tempos[i] < menor) {
+                    menor = tempos[i];
+                    posMenor = i;
+                }
+            }
+
+            var texto = `<h3>🏁 Volta ${voltaAtual} de ${totalVoltas}</h3>`;
+            for (var i = 0; i < listaCavalos.length; i++) {
+                texto += `${listaCavalos[i]}: ${tempos[i].toFixed(1)}s<br>`;
+            }
+            texto += `<br><strong>Líder: ${listaCavalos[posMenor]}</strong>`;
+
+            document.getElementById("resumo").innerHTML = texto;
+
+            if (voltaAtual >= totalVoltas) {
+                corridaAtiva = false;
+                document.getElementById("btnProxima").style.display = "none";
+                document.getElementById("btnIniciar").disabled = false;
+                mostrarPodio();
+            }
+        }
+
+        function mostrarPodio() {
+            var ranking = [];
+            for (var i = 0; i < listaCavalos.length; i++) {
+                ranking.push({ nome: listaCavalos[i], tempo: tempos[i] });
+            }
+
+            ranking.sort(function (a, b) {
+                return a.tempo - b.tempo;
+            });
+
+            var podio = `<h2> Resultado Final:</h2>`;
+            for (var i = 0; i < ranking.length; i++) {
+                if (i === 0) {
+                    podio += `<strong>Primeiro lugar:  ${ranking[i].nome} - ${ranking[i].tempo.toFixed(1)}s</strong><br>`;
+                } else if (i === 1) {
+                    podio += `Segundo lugar:  ${ranking[i].nome} - ${ranking[i].tempo.toFixed(1)}s<br>`;
+                } else if (i === 2) {
+                    podio += `Teceiro lugar:  ${ranking[i].nome} - ${ranking[i].tempo.toFixed(1)}s<br>`;
+                } else {
+                    podio += `${ranking[i].nome} - ${ranking[i].tempo.toFixed(1)}s<br>`;
+                }
+            }
+
+            document.getElementById("resumo").innerHTML += `<br><hr><br>` + podio;
+        }
+    </script>
+</body>
+
+</html>
